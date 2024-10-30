@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "newsApp",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

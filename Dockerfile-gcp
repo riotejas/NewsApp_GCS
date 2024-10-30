@@ -1,0 +1,40 @@
+# [START cloudrun_newsapp_dockerfile]
+# [START run_newsapp_dockerfile]
+
+
+# Build stage
+# Use the offical golang image to create a binary.
+# This is based on Debian and sets the GOPATH to /go.
+# https://hub.docker.com/_/golang
+FROM golang:1.22-bookworm AS builder
+LABEL authors="russell"
+
+WORKDIR /app
+# Retrieve application dependencies.
+# This allows the container build to reuse cached dependencies.
+# Expecting to copy go.mod and if present go.sum.
+COPY go.* ./
+RUN go mod download
+
+COPY . ./
+
+RUN go build -o server ./cmd/api/...
+
+# Run stage
+# Use the official Debian slim image for a lean production container.
+# https://hub.docker.com/_/debian
+# https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
+FROM debian:bookworm-slim
+RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy the binary from the builder stage to the production image
+COPY --from=builder /app/server /app/server
+
+EXPOSE 8080
+CMD ["/app/server"]
+
+
+# [END run_newsapp_dockerfile]
+# [END cloudrun_newsapp_dockerfile]
