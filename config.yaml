@@ -1,0 +1,15 @@
+
+apiServer:
+  port: 8080
+
+newsApi:
+  url: "https://newsapi.org/v2/"
+  country: "us"
+  language: "en"
+
+newsData:
+  url: "https://newsdata.io/api/v2/"
+  country: "us"
+  language: "en"
+
+
